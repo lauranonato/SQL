@@ -1,0 +1,22 @@
+#1  Quero como resultado uma tabela que contenha o id, país e estado de todos os nossos clientes
+select id, country, state from e_commerce.customers;
+#2 Selecione os preços distintos de nossos produtos, mas ordenados de forma decrescente, utilizando o DISTINCT e ORDER BY.
+select distinct price from e_commerce.products order by price desc;
+#3 Retorne a data (naquele formato ANO-MÊS-DIA) de criação dos primeiros 5 registros da tabela customers
+select id, date(created_at) as dia from e_commerce.customers where id between 1 and 5;
+#4 O time de marketing deseja fazer uma campanha em um estado específico. Para isso, eles te pedem os e-mails de todos os clientes que moram no Piauí
+select email from e_commerce.customers where state = 'Piauí';
+#5 Vá até a tabela items e retorne o campo ‘total_price’ de forma distinta, mas utilizando o GROUP BY.
+#o group by sozinho pode fazer a função de um select distinct
+select total_price from e_commerce.items group by total_price;
+#6Selecione todos os pedidos em que o status é cancelado OU entrega_pendente. Retorne também o mesmo resultado, mas utilizando o operador IN.
+select id from e_commerce.orders where status like '%cancelado%' or status = '%entrega pendente%';
+select id from e_commerce.orders where status in ('cancelado','entrega pendente');
+#7 Retorne todos os registros em que o campo ‘additionals’ é nulo na tabela customers.
+select * from e_commerce.customers where additionals is null;
+#8 Utilize o join para trazer a informação de status do pedido juntamente das informações (colunas) da tabela de itens. 
+select * from e_commerce.orders as o
+join e_commerce.items as i on o.id = i.order_id;
+#9 Na tabela de pedidos, além das colunas existentes, quero também informações de nome do cliente e seu telefone
+select * from e_commerce.orders as o, c.first_name,c.cell_phone
+join e_commerce.customers as c on o.id = c.id;
