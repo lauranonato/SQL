@@ -1,0 +1,88 @@
+#subquery de tabela
+#retornar a qtd de acesso de cada um dos usuarios
+select 
+  u.id as user_id,
+  u.user_name,
+  count(a.id) as num_acessos,
+from banco_teste.usuarios u
+left join banco_teste.acessos a on u.id = a.user_id
+group by u.id, u.user_name; #contagem em relação a oque? 1 e 2
+
+#mas qual é a media do numero de acesso de todos os usuarios?
+#agregação com agregaçao nao é permitido. uma subquery como tabela ajuda com isso ... media de acessos de qual tabela? utilizo a consulta anterior dps do from
+select
+  avg(num_acessos) as media_numero_acessos
+from(
+  select 
+  u.id as user_id,
+  u.user_name,
+  count(a.id) as num_acessos,
+from banco_teste.usuarios u
+left join banco_teste.acessos a on u.id = a.user_id
+group by u.id, u.user_name);
+
+#outro exemplo nº de pedidos por usuario, entregues
+select 
+  count(distinct o.id) as num_pedidos,
+  customer_id
+from e_commerce.orders o
+where status = 'entregue'
+group by customer_id
+order by count(distinct o.id) desc;
+
+#ao inves de todos os pedidos, quero pegar somente dos usuarios cadastrados de janeiro 
+select 
+  count(distinct o.id) as num_pedidos,
+  customer_id
+from e_commerce.orders o
+join (
+  select distinct
+  c.id
+  from e_commerce.customers c
+  where date(c.created_at) between '2018-01-01' and '2018-01-31') T ##tudo isso como se fosse uma tabela, mas o on precisa existir
+  on t.id = o.customer_id
+where status = 'entregue'
+group by customer_id
+order by count(distinct o.id) desc;
+
+#exemplo, estatistica de dias entre cadastro e 1 compra
+select 
+  avg(dias_primeira_compra) as media_dias_acesso_compra,
+  max(dias_primeira_compra) as maximo_dias_acesso_compra,
+  min(dias_primeira_compra) as minimo_dias_acesso_compra
+from(
+select
+  c.id,
+  min(timestamp_diff(o.created_at,c.created_at,day)) as dias_primeira_compra #minimo, pois quero a 1 compra 
+from e_commerce.customers c
+join e_commerce.orders o on c.id = o.customer_id
+group by c.id)
+
+#subquery como coluna
+select 
+  u.id as user_id,
+  u.user_name,
+  (select 
+    count(a.id)
+    from banco_teste.acessos a
+    where a.user_id = u.id) as num_acesos #necessario identificar qual a chave da segunda consulta q se relaciona com a consulta principal, nesse caso user_id com u.id
+from banco_teste.usuarios u
+group by 1, 2;
+
+#subquery como filtro e também como filtro
+select 
+  u.id as user_id,
+  u.user_name,
+  (select 
+    count(a.id)
+    from banco_teste.acessos a
+    where a.user_id = u.id) as num_acesos
+from banco_teste.usuarios u
+where (select 
+    count(a.id)
+    from banco_teste.acessos a
+    where a.user_id = u.id) = 0
+group by 1, 2;
+© 2022 GitHub, Inc.
+Terms
+Privacy

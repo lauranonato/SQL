@@ -1,0 +1,23 @@
+#1 Retorne em uma só consulta os valores de média, máximo, mínimo, contagem e soma do campo ‘total_price’ da tabela items
+select 
+  avg(total_price) as media,
+  max(total_price) as maximo,
+  min(total_price) as minimo,
+  count(total_price) as contagem
+from e_commerce.items;
+
+#2 Retorne a quantidade de pedidos de cada status por dia, ordenando pelo dia, de forma decrescente
+select 
+  count(id) as qtd_pedidos,
+  status,
+  date(created_at) as dia,
+from e_commerce.orders
+group by status, dia
+order by dia desc;
+
+#3 
+select sum(i.quantity) as soma_pedidos, i.order_id as id_produto, p.name as nome
+from e_commerce.items as i
+join e_commerce.products as p
+on i.product_id = p.id
+group by nome;
